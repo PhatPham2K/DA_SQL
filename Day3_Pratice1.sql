@@ -42,7 +42,7 @@ select * from lyft_drivers
 where yearly_salary <= 30000 or yearly_salary >= 70000
 --ex15
 select advertising_channel from uber_advertising
-where money_spent >=100000 and year = '2019'
+where money_spent >100000 and year = 2019
 
 
 
