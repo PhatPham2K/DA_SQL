@@ -1,8 +1,13 @@
--- ex1
+--ex1
 select distinct city from station
 where (id%2=0)
--- ex2
+--ex 2
 select count(city) - count(distinct city) from station
+
+--ex 3
+select 
+ceil(avg(salary - replace(salary, '0', '')))
+from employees
 
 --ex4
 SELECT ROUND(SUM(item_count::Decimal * order_occurrences)/ SUM(order_occurrences),1)
@@ -32,6 +37,44 @@ FROM monthly_cards_issued
 GROUP BY card_name
 ORDER BY difference DESC;
 
+--ex 8
+-- Cogs = Cost of goods sold
+-- numberOfDrugs = COUNT(drugs)
+-- find total sales < cogs => total_loss = sales - cogs
+-- output manufacturer @ drugs_count @ total_loss
+SELECT manufacturer, 
+COUNT(drug) as drugs_count,
+ABS(SUM(total_sales - cogs)) AS total_loss
+FROM pharmacy_sales
+WHERE total_sales < cogs
+GROUP BY manufacturer
+ORDER BY total_loss DESC;
+
+-- ex 9
+-- output all
+-- find odd id, description # boring, rating desc
+select * from cinema
+where (id%2=1) and description <> 'boring'
+order by rating desc
+
+--ex 10
+select teacher_id,
+count(distinct subject_id) as cnt 
+from teacher
+group by teacher_id
+
+--ex 11
+select user_id,
+count(distinct follower_id) as followers_count
+from followers
+group by user_id
+order by user_id asc
+
+--ex 12
+SELECT class
+FROM Courses
+GROUP BY class
+HAVING COUNT(student) >= 5;
 
 
 
