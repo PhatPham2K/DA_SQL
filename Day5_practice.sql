@@ -1,3 +1,54 @@
+***THEORY***
+***GROUP BY***
+-- Find max min avg for total_cost of film 
+select film_id,
+max (replacement_cost) as max_cost,
+min (replacement_cost) as min_cost,
+round(avg (replacement_cost)) as avg_cost,
+sum (replacement_cost) as sum_cost
+from film
+group by film_id
+order by film_id
+  
+-- Find how much each customer paid
+select customer_id, staff_id,
+sum(amount) as total_amount,
+round(avg(amount)) as average_amount,
+max(amount) as max_amount,
+min(amount) as min_amount,
+count(*) as total_bill
+from payment
+group by customer_id, staff_id
+order by customer_id, staff_id
+
+-- ***HAVING:  is used to filter the results of aggregate functions  (e.g., SUM, AVG, COUNT, etc.) after the grouping >< WHERE clause is used to filter rows before any grouping or aggregation is applied.
+--find which customer paid > $100
+select customer_id,
+sum(amount) as total_paid
+from payment
+group by customer_id
+having sum(amount) >100
+
+--find which customer paid > $10 n Jan 2020
+select customer_id,
+sum(amount) as total_paid
+from payment
+where payment_date between '2020-01-01' and '2020-02-01'
+group by customer_id
+having sum(amount) >10
+
+-- find revenue on April 28th - 30th, find avg payment group by customer and payment date that having more than 1 payment_id
+/* use BETWEEN when you want to filter based on a range, and use IN when you want to filter based on a specific set of values.*/
+select customer_id, date(payment_date),
+avg(amount) as average_amount,
+count(payment_id)
+from payment
+where date(payment_date) IN ('2020-04-28', '2020-04-29', '2020-04-30')
+group by customer_id, date(payment_date)
+having count(payment_id) >1
+order by avg(amount) desc
+
+
 --ex1
 select distinct city from station
 where (id%2=0)
