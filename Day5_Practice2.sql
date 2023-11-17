@@ -48,6 +48,25 @@ group by customer_id, date(payment_date)
 having count(payment_id) >1
 order by avg(amount) desc
 
+--Mathematics operations & functions
+select film_id,
+rental_rate,
+round(rental_rate*0.5,2) as new_rental_rate
+--ceiling(rental_rate*1.1) as new_rental_rate
+--floor(rental_rate*0.5) -0.1 as new_rental_rate
+from film
+
+-- Create a list of films having rental_rent less than 4% of the replacement cost.
+select film_id,
+rental_rate as "giá thuê phim",
+replacement_cost as "chi phí thay thế",
+round((rental_rate/replacement_cost)*100,2) as percentage
+from film 
+where round((rental_rate/replacement_cost)*100,2) <4
+
+  *** Order of querries: SELECT ... FROM ... WHERE ... GROUP BY ... HAVING ... ORDER BY ... LIMIT
+
+***PRACTICE
 
 --ex1
 select distinct city from station
