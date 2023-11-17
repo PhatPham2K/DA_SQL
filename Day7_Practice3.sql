@@ -1,3 +1,63 @@
+***THEORY
+--- LOWER, UPPER, LENGTH
+SELECT email,
+lower(email) as lower_mail,
+upper(email) as upper_mail,
+length(email) as length_email
+from customer
+where length(email) <29
+
+--- List customers having surname or lastname less them 10 letters
+select 
+lower(first_name),
+lower(last_name)
+from customer
+where length(first_name) >10 or length(last_name) >10
+
+--- LEFT(), RIGHT()
+select first_name,
+left(first_name,3),
+right(first_name,2),
+left(right(first_name,4),1)
+from customer
+
+
+--extract the last 5 characters of the email address. The email address always ends with '.org', How to extract the '.' from the email address.
+select right(email,5)
+from customer   
+  --> 'r.org'
+  
+select left(right(email,4),1)
+from customer
+
+---concatenate
+select
+customer_id, first_name, last_name,
+first_name || ' ' || last_name as fullname
+from customer
+
+---concat()
+select
+customer_id, first_name, last_name,
+concat(first_name,' ', last_name) as fullname
+from customer
+
+
+/*MARY.SMITH@sakilacustomer.org
+  --> MAR***TH@sakilacustomer.org */
+SELECT 
+  email,
+  CONCAT(LEFT(email, 3),'***', right(email,20)) AS masked_email
+FROM customer;
+
+
+
+
+
+
+
+
+
 --ex1
 select name from students
 where marks > 75
