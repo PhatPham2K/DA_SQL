@@ -42,7 +42,6 @@ customer_id, first_name, last_name,
 concat(first_name,' ', last_name) as fullname
 from customer
 
-
 /*MARY.SMITH@sakilacustomer.org
   --> MAR***TH@sakilacustomer.org */
 SELECT 
@@ -50,14 +49,77 @@ SELECT
   CONCAT(LEFT(email, 3),'***', right(email,20)) AS masked_email
 FROM customer;
 
+--REPLACE()
+select
+email,
+replace(email, '.org', '.com') as new_email
+from customer
+  
+--POSITION()
+select
+email,
+left(email, position('@' in email) -1)
+from customer
 
+--SUBSTRING()
+-- take [2,4] from first_name
+select
+first_name,
+substring(first_name from 2 for 3)
+from customer
 
+--SUBSTRING()
+-- take last name out from email
+select 
+email,
+substring(email from position('.' in email)+1 
+for position('@' in email)-position('.' in email)-1)
+from customer
 
+--take last name and first name to create full name column from email only
+  
+select 
+email,
+substring(email from position('.' in email)+1 
+for position('@' in email)-position('.' in email)-1) AS last_name,
+substring(email from 1 for position('.' in email)-1) as first_name,
+concat(substring(email from 1 for position('.' in email)-1),' ', substring(email from position('.' in email)+1 
+for position('@' in email)-position('.' in email)-1)) 
+as full_name
+from customer
+  
+---EXTRACT()
+/*In 2020, how many bill in each month
+EXTRACT (Field FROM date/time/intervals)*/
+select extract(month from rental_date) as month, 
+count(*) as bill
+from rental 
+where extract(year from rental_date)='2020' 
+group by extract(month from rental_date)
 
+/*Find:
+1. Which month has the largest total_payment
+2. Which weekday has the largest total_payment
+3. The largest total_payment per each customer in a week*/
+select extract(month from payment_date) as month, 
+sum(amount) as total_amount_in_month
+from payment 
+group by extract(month from payment_date)
+order by sum(amount) desc
 
+select extract(day from payment_date) as day, 
+sum(amount) as total_amount_in_day
+from payment 
+group by extract(day from payment_date)
+order by sum(amount) desc
 
-
-
+select customer_id,
+extract(week from payment_date) as week,
+sum(amount) as total_amount
+from payment
+group by customer_id, extract(week from payment_date)
+order by sum(amount) desc
+  
 --ex1
 select name from students
 where marks > 75
