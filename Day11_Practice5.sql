@@ -1,3 +1,23 @@
+***Theory
+---INNER JOIN	
+SELECT t1.*, t2.*
+from table1 as t1
+inner join table 2 as t2
+on t1.key1 = t2.key2
+
+/*How manny passengers in business, economy, comfort || join = inner join*/ 
+select * from bookings.seats;
+select *from bookings.boarding_passes;
+
+select t2.fare_conditions, 
+count(flight_id) as number_of_flights
+from bookings.boarding_passes as t1
+join bookings.seats as t2
+on t1.seat_no = t2.seat_no
+group by t2.fare_conditions
+
+
+
 ***Midterm Test
 Question 1:
 select distinct replacement_cost
