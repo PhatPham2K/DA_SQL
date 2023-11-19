@@ -126,6 +126,24 @@ extract(day from payment_date),
 to_char(payment_date,'dd-mm-yyyy hh:mm:ss') as format_date
 from payment
 
+--INTERVAL
+select current_date, current_timestamp, 
+customer_id,
+rental_date as "ngày thuê",
+return_date as "ngày trả",
+return_date - rental_date as "số ngày thuê",
+extract(day from return_date - rental_date)*24 
++ extract(hour from return_date - rental_date) || ' hours'  as "số giờ thuê"
+from rental
+
+select customer_id,
+rental_date,
+return_date,
+return_date - rental_date as rental_time
+from rental
+where customer_id = 35
+
+
 ***PRACTICE
 --ex1
 select name from students
