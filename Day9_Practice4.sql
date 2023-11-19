@@ -24,6 +24,46 @@ count(*)
 from bookings.flights
 group by season
 
+---PIVOT
+	/*How many films having rating R, PG, PG-13 in short-medium-long films*/
+select 
+case
+	when length < 60  then 'short'
+	when length between 60 and 120 then 'medium'
+	else 'long'
+end as category,
+sum(case
+	when rating ='R' then 1 else 0
+end) as r,
+sum(case
+	when rating ='PG' then 1 else 0
+end) as PG,
+sum(case
+	when rating ='PG-13' then 1 else 0
+end) as "PG-13"
+from film
+group by category
+
+---COALESCE() if field is null replace by another value but must be the same data type
+select 
+scheduled_arrival,
+actual_arrival,
+coalesce (actual_arrival,'2020-01-01'),
+coalesce (actual_arrival,scheduled_arrival),
+coalesce (actual_arrival-scheduled_arrival,'00:00')
+from flights
+
+---CAST change a data type by another new data type, if it's a string, string must have numbers not a,b,c
+select 
+scheduled_arrival,
+actual_arrival,
+coalesce (actual_arrival,'2020-01-01'),
+coalesce (actual_arrival,scheduled_arrival),
+coalesce (cast(actual_arrival-scheduled_arrival as varchar),'not arrive')
+from flights
+
+
+	
 *** Practice
 --ex1: datalemur-laptop-mobile-viewership.
 SELECT 
