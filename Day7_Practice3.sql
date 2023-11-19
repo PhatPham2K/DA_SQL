@@ -119,7 +119,14 @@ sum(amount) as total_amount
 from payment
 group by customer_id, extract(week from payment_date)
 order by sum(amount) desc
-  
+
+--TO_CHAR()
+select payment_date,
+extract(day from payment_date),
+to_char(payment_date,'dd-mm-yyyy hh:mm:ss') as format_date
+from payment
+
+***PRACTICE
 --ex1
 select name from students
 where marks > 75
