@@ -227,4 +227,45 @@ Question:Thành phố nào đạt doanh thu cao nhất?
 Answer: Cape Coral : 221.55
 */
 
+/*Danh sách các thành phố và doanh thu tương ứng trên từng thành phố 
+Question:Thành phố nào đạt doanh thu cao nhất?
+city -> address -> customer -> payment
+Answer: Cape Coral : 221.55*/ 
+select t1.city, sum(t4.amount) as total_amount
+from public.city as t1
+join public.address as t2 
+on t1.city_id = t2.city_id
+join public.customer as t3
+on t3.address_id= t2.address_id
+join public.payment as t4
+on t4.customer_id=t3.customer_id
+group by t1.city
+order by total_amount desc
+limit 1;
+
+/*Question 8: Tạo danh sách trả ra 2 cột dữ liệu: 
+-	cột 1: thông tin thành phố và đất nước ( format: “city, country")
+-	cột 2: doanh thu tương ứng với cột 1
+Question: thành phố của đất nước nào đat doanh thu cao nhất
+Answer: United States, Tallahassee : 50.85.
+*/
+--country -> city -> address -> customer  -> payment
+select t2.city || ', ' || t1.country AS city_of_country,
+sum(t5.amount) as total_amount
+from public.country as t1 
+join public.city as t2
+on t1.country_id=t2.country_id
+join public.address as t3
+on t3.city_id=t2.city_id
+join public.customer as t4
+on t4.address_id = t3.address_id
+join public.payment as t5
+on t5.customer_id = t5.customer_id
+group by t2.city_id, t1.country_id
+order by total_amount desc
+
+
+
+
+
 
