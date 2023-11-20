@@ -282,41 +282,33 @@ ON t1.email_id = t2.email_id
 AND t2.signup_action = 'Confirmed';
 
 --EX3: https://datalemur.com/questions/time-spent-snaps
+
 SELECT
-  t2.age_bucket,
-  CASE
-    WHEN SUM(CASE WHEN t1.activity_type = 'send' THEN t1.time_spent ELSE 0 END) + 
-         SUM(CASE WHEN t1.activity_type = 'open' THEN t1.time_spent ELSE 0 END) = 0
-    THEN 0  -- Handle division by zero by returning 0 in this case
-    ELSE ROUND(SUM(CASE WHEN t1.activity_type = 'send' THEN t1.time_spent ELSE 0 END) /
-               (SUM(CASE WHEN t1.activity_type IN ('send', 'open') THEN t1.time_spent ELSE 0 END)) * 100.0, 2)
-  END AS send_perc,
-  CASE
-    WHEN SUM(CASE WHEN t1.activity_type = 'send' THEN t1.time_spent ELSE 0 END) + 
-         SUM(CASE WHEN t1.activity_type = 'open' THEN t1.time_spent ELSE 0 END) = 0
-    THEN 0  -- Handle division by zero by returning 0 in this case
-    ELSE ROUND(SUM(CASE WHEN t1.activity_type = 'open' THEN t1.time_spent ELSE 0 END) /
-               (SUM(CASE WHEN t1.activity_type IN ('send', 'open') THEN t1.time_spent ELSE 0 END)) * 100.0, 2)
-  END AS open_perc
-FROM activities AS t1
-JOIN age_breakdown AS t2 ON t1.user_id = t2.user_id
-GROUP BY t2.age_bucket;
+    age_bucket,
+    ROUND(
+        100 * SUM(CASE
+            WHEN ac.activity_type = 'send' THEN ac.time_spent
+        END) :: DECIMAL / SUM(CASE
+            WHEN ac.activity_type IN ('open', 'send') THEN ac.time_spent
+        END), 2) AS send_perc,
+    ROUND(
+        100 * SUM(CASE
+            WHEN ac.activity_type = 'open' THEN ac.time_spent
+        END) :: DECIMAL / SUM(CASE
+            WHEN ac.activity_type IN ('open', 'send') THEN ac.time_spent
+        END), 2) AS open_perc
+FROM
+    activities AS ac
+JOIN age_breakdown AS ab ON ac.user_id = ab.user_id
+GROUP BY
+    ab.age_bucket;
 
 --EX4: https://datalemur.com/questions/supercloud-customer
-SELECT customer_id
-FROM (SELECT 
-      customers.customer_id, 
-      COUNT(DISTINCT products.product_category) AS unique_count
-      FROM customer_contracts AS customers
-      LEFT JOIN products 
-      ON customers.product_id = products.product_id
-      GROUP BY customers.customer_id
-) AS supercloud
-WHERE unique_count = (
-    SELECT COUNT(DISTINCT product_category) 
-    FROM products
-)
-ORDER BY customer_id;
+SELECT customer_id FROM customer_contracts as a 
+inner join 
+products as b on a.product_id = b.product_id
+GROUP BY customer_id
+having count(distinct b.product_category) = 3
 
 --EX5:https://leetcode.com/problems/the-number-of-employees-which-report-to-each-employee/description/?envType=study-plan-v2&envId=top-sql-50
 SELECT
