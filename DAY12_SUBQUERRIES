@@ -1,0 +1,27 @@
+--SUBQUERIES IN WHERE 
+--Tìm những hóa đơn có số tiền lớn hơn số tiền trung bình các hóa đơn
+
+select * from payment 
+where amount > (select avg(amount) from payment);
+--Tìm những hóa đơn có tên là Adam
+select * from payment
+where customer_id = (select customer_id from customer
+					where first_name = 'ADAM');
+--Tìm những bộ phim có thời lượng lớn hơn trung bình các bộ phim
+select film_id, title 
+from film
+where length > (select avg(length) from film);
+				
+--Tìm những film có ở store 2 ít nhất 3 lần
+select film_id, title from film
+where film_id IN (select film_id from public.inventory
+where store_id = 2
+group by film_id
+having count(*) >= 3);
+
+-- Tìm những khách hàng đến từ California và đã chi tiêu hơn 100
+select customer_id,first_name,last_name,email from public.customer
+where  customer_id IN (select customer_id 
+					   from payment 
+					   group by customer_id 
+					   having sum(amount) >100)
