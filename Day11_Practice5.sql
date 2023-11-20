@@ -264,8 +264,89 @@ on t5.customer_id = t5.customer_id
 group by t2.city_id, t1.country_id
 order by total_amount desc
 
+***PRACTICE
+--EX1: hackerrank-average-population-of-each-continent.
+SELECT T2.CONTINENT, FLOOR(AVG(T1.POPULATION))
+FROM CITY AS T1
+INNER JOIN COUNTRY AS T2
+ON T1.COUNTRYCODE = T2.CODE
+GROUP BY T2.CONTINENT
 
+--EX2: https://datalemur.com/questions/signup-confirmation-rate
+SELECT 
+  ROUND(COUNT(t2.email_id)::DECIMAL
+    /COUNT(DISTINCT t1.email_id),2) AS activation_rate
+FROM emails as t1
+LEFT JOIN texts as t2
+ON t1.email_id = t2.email_id
+AND t2.signup_action = 'Confirmed';
 
+--EX3: https://datalemur.com/questions/time-spent-snaps
+SELECT
+  t2.age_bucket,
+  CASE
+    WHEN SUM(CASE WHEN t1.activity_type = 'send' THEN t1.time_spent ELSE 0 END) + 
+         SUM(CASE WHEN t1.activity_type = 'open' THEN t1.time_spent ELSE 0 END) = 0
+    THEN 0  -- Handle division by zero by returning 0 in this case
+    ELSE ROUND(SUM(CASE WHEN t1.activity_type = 'send' THEN t1.time_spent ELSE 0 END) /
+               (SUM(CASE WHEN t1.activity_type IN ('send', 'open') THEN t1.time_spent ELSE 0 END)) * 100.0, 2)
+  END AS send_perc,
+  CASE
+    WHEN SUM(CASE WHEN t1.activity_type = 'send' THEN t1.time_spent ELSE 0 END) + 
+         SUM(CASE WHEN t1.activity_type = 'open' THEN t1.time_spent ELSE 0 END) = 0
+    THEN 0  -- Handle division by zero by returning 0 in this case
+    ELSE ROUND(SUM(CASE WHEN t1.activity_type = 'open' THEN t1.time_spent ELSE 0 END) /
+               (SUM(CASE WHEN t1.activity_type IN ('send', 'open') THEN t1.time_spent ELSE 0 END)) * 100.0, 2)
+  END AS open_perc
+FROM activities AS t1
+JOIN age_breakdown AS t2 ON t1.user_id = t2.user_id
+GROUP BY t2.age_bucket;
+
+--EX4: https://datalemur.com/questions/supercloud-customer
+SELECT customer_id
+FROM (SELECT 
+      customers.customer_id, 
+      COUNT(DISTINCT products.product_category) AS unique_count
+      FROM customer_contracts AS customers
+      LEFT JOIN products 
+      ON customers.product_id = products.product_id
+      GROUP BY customers.customer_id
+) AS supercloud
+WHERE unique_count = (
+    SELECT COUNT(DISTINCT product_category) 
+    FROM products
+)
+ORDER BY customer_id;
+
+--EX5:https://leetcode.com/problems/the-number-of-employees-which-report-to-each-employee/description/?envType=study-plan-v2&envId=top-sql-50
+SELECT
+  t1.employee_id,
+  t1.name,
+  COUNT(t2.employee_id) AS reports_count,
+  ROUND(AVG(t2.age)) AS average_age
+FROM Employees as t1
+LEFT JOIN Employees as t2 ON t1.employee_id = t2.reports_to
+WHERE t1.employee_id IN (SELECT DISTINCT t2.reports_to FROM Employees WHERE t2.reports_to IS NOT NULL)
+GROUP BY t1.employee_id, t1.name
+ORDER BY t1.employee_id;
+
+--EX6: leetcode-list-the-products-ordered-in-a-period.
+SELECT
+t1.product_name,
+SUM(t2.unit) AS unit
+FROM Products as t1
+JOIN Orders as t2 
+ON t1.product_id = t2.product_id
+WHERE t2.order_date BETWEEN '2020-02-01' AND '2020-02-29'
+GROUP BY t1.product_id, t1.product_name
+HAVING SUM(t2.unit) >= 100;
+--EX7: datalemur.com/questions/sql-page-with-no-likes
+SELECT t1.page_id
+FROM pages AS t1
+LEFT JOIN page_likes AS t2 
+ON t1.page_id = t2.page_id
+WHERE t2.page_id IS NULL
+ORDER BY t1.page_id;
 
 
 
